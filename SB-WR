@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polbus Wrocław – Sobótka | Linie 512 i 522</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+
+    .panel {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 14px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      max-width: 320px;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .line512 {
+      color: #1565c0;
+      font-weight: bold;
+    }
+
+    .line522 {
+      color: #ef6c00;
+      font-weight: bold;
+    }
+
+    .stop-list {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+    .legend {
+      margin-top: 15px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+      font-size: 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .legend-line {
+      width: 24px;
+      height: 4px;
+      margin-right: 8px;
+      border-radius: 2px;
+    }
+
+    .blue {
+      background: #1565c0;
+    }
+
+    .orange {
+      background: #ef6c00;
+    }
+
+    @media (max-width: 768px) {
+      .panel {
+        max-width: 85%;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <h2>Polbus-PKS Wrocław – Sobótka</h2>
+
+  <div>
+    <span class="line512">Linia 512</span> — Wrocław ⇄ Sobótka<br>
+    <span class="line522">Linia 522</span> — Wrocław ⇄ Przełęcz Tąpadła
+  </div>
+
+  <h3>Przystanki</h3>
+
+  <ol class="stop-list">
+    <li>Wrocław Dworzec Autobusowy</li>
+    <li>Hallera / Wiśniowa</li>
+    <li>Krzyki / Powstańców Śląskich</li>
+    <li>Bielany Wrocławskie</li>
+    <li>Tyniec Mały</li>
+    <li>Małuszów</li>
+    <li>Gniechowice</li>
+    <li>Zachowice</li>
+    <li>Mirosławice</li>
+    <li>Rogów Sobócki</li>
+    <li>Sobótka</li>
+    <li>Sobótka Zachodnia</li>
+    <li>Sulistrowiczki</li>
+    <li>Przełęcz Tąpadła</li>
+  </ol>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-line blue"></div>
+      Linia 512
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-line orange"></div>
+      Linia 522
+    </div>
+
+    <p>
+      Kliknij przystanek na mapie, aby zobaczyć szczegóły.
+    </p>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  const map = L.map('map').setView([51.015, 16.86], 10);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const stops = [
+    { nr: 1, name: 'Wrocław Dworzec Autobusowy', coords: [51.0979, 17.0367] },
+    { nr: 2, name: 'Hallera / Wiśniowa', coords: [51.0838, 17.0067] },
+    { nr: 3, name: 'Krzyki / Powstańców Śląskich', coords: [51.0715, 17.0055] },
+    { nr: 4, name: 'Bielany Wrocławskie', coords: [51.0332, 16.9671] },
+    { nr: 5, name: 'Tyniec Mały', coords: [50.9855, 16.9385] },
+    { nr: 6, name: 'Małuszów', coords: [50.9497, 16.9158] },
+    { nr: 7, name: 'Gniechowice', coords: [50.9135, 16.8915] },
+    { nr: 8, name: 'Zachowice', coords: [50.8830, 16.8725] },
+    { nr: 9, name: 'Mirosławice', coords: [50.8474, 16.8422] },
+    { nr: 10, name: 'Rogów Sobócki', coords: [50.8040, 16.7689] },
+    { nr: 11, name: 'Sobótka', coords: [50.8990, 16.7441] },
+    { nr: 12, name: 'Sobótka Zachodnia', coords: [50.8925, 16.7180] },
+    { nr: 13, name: 'Sulistrowiczki', coords: [50.8649, 16.6941] },
+    { nr: 14, name: 'Przełęcz Tąpadła', coords: [50.8463, 16.6615] }
+  ];
+
+  stops.forEach(stop => {
+    L.marker(stop.coords)
+      .addTo(map)
+      .bindPopup(`
+        <b>${stop.nr}. ${stop.name}</b><br>
+        Linie: 512 / 522<br>
+        Kierunek: Wrocław ⇄ Sobótka
+      `);
+  });
+
+  const line512 = [
+    [51.0979, 17.0367],
+    [51.0838, 17.0067],
+    [51.0715, 17.0055],
+    [51.0332, 16.9671],
+    [50.9855, 16.9385],
+    [50.9497, 16.9158],
+    [50.9135, 16.8915],
+    [50.8830, 16.8725],
+    [50.8474, 16.8422],
+    [50.8040, 16.7689],
+    [50.8990, 16.7441]
+  ];
+
+  const line522 = [
+    [50.8990, 16.7441],
+    [50.8925, 16.7180],
+    [50.8649, 16.6941],
+    [50.8463, 16.6615]
+  ];
+
+  const polyline512 = L.polyline(line512, {
+    color: '#1565c0',
+    weight: 6,
+    opacity: 0.9
+  }).addTo(map);
+
+  const polyline522 = L.polyline(line522, {
+    color: '#ef6c00',
+    weight: 6,
+    opacity: 0.9
+  }).addTo(map);
+
+  const overlayMaps = {
+    'Linia 512': polyline512,
+    'Linia 522': polyline522
+  };
+
+  L.control.layers(null, overlayMaps, {
+    collapsed: false
+  }).addTo(map);
+
+  map.fitBounds(polyline512.getBounds());
+</script>
+
+</body>
+</html>
